@@ -1,3 +1,20 @@
+from flask import Flask, render_template
+from flask_apscheduler import APScheduler
+
+app = Flask(__name__)
+scheduler = APScheduler()
+scheduler.api_enabled = True
+scheduler.init_app(app)
+scheduler.start()
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+# interval example
+@scheduler.task('interval', id='do_job_1', seconds=300, misfire_grace_time=900)
+def job1():
+    print('Posts updated (NOT IMPLEMENTED)')
+
+
+
 # https://github.com/HyperbolicStudios/YYJ-Bus-Speed-Tracker/blob/main/app.py
 # Use above as an example
 

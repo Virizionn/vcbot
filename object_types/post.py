@@ -6,9 +6,9 @@
 # HTML is the content of the post
 
 class post:
-    def __init__(self, user, number, id, date, html):
-      self.user = user
-      self.number = number
+    def __init__(self, author, postnum, id, date, html):
+      self.author = author
+      self.postnum = postnum
       self.id = id
       self.date = date
       self.HTML = html
