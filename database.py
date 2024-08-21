@@ -41,9 +41,9 @@ def add_post_to_db(post, game):
 
 
 def get_posts_by_authors(game, authors):
-    col = db["posts"]
-    res = col.find({ "game": game, "author": { "$in": authors } })
-    return list(res).sort({"postnum": 1})  # sort the database objects by p#
+    col = db["posts"]    
+    res = col.find({ "game": game, "author": { "$in": authors } }).sort("postnum", 1)
+    return list(res)
 
 
 def add_phase_to_db(phase, game):
