@@ -19,6 +19,7 @@ def validate_game(func):
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["mafia"]
 
+
 @validate_game
 def add_vote_to_db(vote, game):
     col = db["votes"]
@@ -27,11 +28,13 @@ def add_vote_to_db(vote, game):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
 @validate_game
 def get_votes_by_range(game, start, end):
     col = db["votes"]
     res = col.find({ "game": game, "postnum": { "$gte": start, "$lte": end } })
     return list(res)
+
 
 @validate_game
 def get_all_votes(game):
@@ -39,17 +42,20 @@ def get_all_votes(game):
     res = col.find({ "game": game })
     return list(res)
 
+  
 @validate_game
 def get_votes_by_voter(game, player):
     col = db["votes"]
     res = col.find({ "game": game, "voter": player })
     return list(res)
 
+
 @validate_game
 def get_votes_by_target(game, player):
     col = db["votes"]
     res = col.find({ "game": game, "target": player })
     return list(res)
+
 
 @validate_game
 def add_post_to_db(post, game):
@@ -59,11 +65,13 @@ def add_post_to_db(post, game):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
 @validate_game
 def get_posts_by_authors(game, authors):
-    col = db["posts"]
-    res = col.find({ "game": game, "author": { "$in": authors } })
+    col = db["posts"]    
+    res = col.find({ "game": game, "author": { "$in": authors } }).sort("postnum", 1)
     return list(res)
+
 
 @validate_game
 def get_all_posts(game):
@@ -71,6 +79,7 @@ def get_all_posts(game):
     res = col.find({ "game": game })
     return list(res)
 
+  
 @validate_game
 def add_phase_to_db(phase, game):
     col = db["phases"]
@@ -79,6 +88,7 @@ def add_phase_to_db(phase, game):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
 def add_alias_to_db(name, alias):
     col = db["aliases"]
     myquery = { "alias": alias }
@@ -86,6 +96,9 @@ def add_alias_to_db(name, alias):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
+# In addition to this, I'll need a function to update database keys.
+# Should be similar to updateData from the replit code.
 @validate_game
 def set_game_attr(game, key, value):
     #game is the column, key is the row, value is the value to update
@@ -95,6 +108,7 @@ def set_game_attr(game, key, value):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+  
 @validate_game
 def get_game_attr(game, key):
     col = db["game_attr"]
@@ -103,6 +117,7 @@ def get_game_attr(game, key):
     if res is None:
         return None
     return res["value"]
+
 
 @validate_game
 def wipe_game_db(game):
