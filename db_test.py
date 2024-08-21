@@ -1,5 +1,6 @@
 # test adding everything
-from database import add_alias_to_db, add_phase_to_db, add_post_to_db, add_vote_to_db, update_key_in_db, get_data_from_db, get_votes_by_player, get_votes_by_range
+from database import add_alias_to_db, add_phase_to_db, add_post_to_db, add_vote_to_db, update_key_in_db, \
+                     get_data_from_db, get_votes_by_voter, get_votes_by_range
 from object_types import vote, post, phase
 
 # test adding a vote
@@ -48,6 +49,6 @@ for i in range(11, 21):
     v = vote.vote("voter2", "target", "url", i)
     add_vote_to_db(v, "A")
 
-#Then, get votes from "voter"
-print(get_votes_by_player("A", "voter"))
+# Then, get votes from "voter"
+print(get_votes_by_voter("A", "voter"))
 
