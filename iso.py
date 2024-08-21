@@ -1,17 +1,18 @@
 # This file contains functions for working with ISOs.
 
 from database import get_posts_by_authors
+from object_types.post import post
 
 
 # get_iso takes a list of players (at least one), and returns a list of all posts by those players.
 # The list is sorted by post number, with the earliest post first.
 # Currently, we only support one player, but having a list of players allows for multi-iso in the future.
 def get_iso(players, game):
-    iso_db_obj = get_posts_by_authors(players, game)  # get a list of database objects pertaining to "players"
+    iso_db_obj = get_posts_by_authors(game, players)  # get a list of database objects pertaining to "players"
     iso_list = []  # storage
     for mapping in iso_db_obj:
-        post = post(mapping.author, mapping.postnum, mapping.id, mapping.date, mapping.HTML)  # initiate a post obj
-        iso_list.append(post)
+        curPost = post(mapping["author"], mapping["postnum"], mapping["post_id"], mapping["date"], mapping["content"])  # initiate a post obj
+        iso_list.append(curPost)
     return iso_list
 
 
