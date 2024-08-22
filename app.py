@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 from flask_apscheduler import APScheduler
+from iso import get_iso
+from object_types import post
 
 app = Flask(__name__)
 scheduler = APScheduler()
@@ -38,8 +40,16 @@ def job1():
 
 
 # Set up endpoint for targeted ISO
-#@app.route('/<game>/iso/<target>')
-# REQUIRED FUNCTION: Must be able to collect all posts by a player
+@app.route('/<game>/iso/<target>')
+def iso(game, target):
+    # take target, append it to a list of targets containing only that target
+    targets = [target]
+    posts = get_iso(targets, game)
+    articles = []
+    for post in posts:
+        articles.append(post.HTML)
+
+    return render_template('iso.html', posts=articles)
 
 # Above this line: All outlined functions have stubs
 # --------------------------------------------------------------------------------------------

@@ -17,6 +17,7 @@ def validate_game(func):
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["mafia"]
 
+
 @validate_game
 def add_vote_to_db(game, vote):
     col = db["votes"]
@@ -25,6 +26,7 @@ def add_vote_to_db(game, vote):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
 @validate_game
 def get_votes_by_range(game, start, end):
     col = db["votes"]
@@ -32,23 +34,27 @@ def get_votes_by_range(game, start, end):
     res = sorted(res, key=lambda x: x["postnum"])
     return list(res)
 
+
 @validate_game
 def get_all_votes(game):
     col = db["votes"]
     res = col.find({ "game": game })
     return list(res)
 
+  
 @validate_game
 def get_votes_by_voter(game, player):
     col = db["votes"]
     res = col.find({ "game": game, "voter": player })
     return list(res)
 
+
 @validate_game
 def get_votes_by_target(game, player):
     col = db["votes"]
     res = col.find({ "game": game, "target": player })
     return list(res)
+
 
 @validate_game
 def add_post_to_db(game, post):
@@ -58,11 +64,13 @@ def add_post_to_db(game, post):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
 @validate_game
 def get_posts_by_authors(game, authors):
-    col = db["posts"]
-    res = col.find({ "game": game, "author": { "$in": authors } })
+    col = db["posts"]    
+    res = col.find({ "game": game, "author": { "$in": authors } }).sort("postnum", 1)
     return list(res)
+
 
 @validate_game
 def get_all_posts(game):
@@ -70,6 +78,7 @@ def get_all_posts(game):
     res = col.find({ "game": game })
     return list(res)
 
+  
 @validate_game
 def add_phase_to_db(game, phase):
     
@@ -79,6 +88,8 @@ def add_phase_to_db(game, phase):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+  
+@validate_game
 def get_phases(game):
     col = db["phases"]
     res = col.find({ "game": game })
@@ -86,6 +97,7 @@ def get_phases(game):
     res = sorted(res, key=lambda x: x["postnum"])
     return list(res)
 
+  
 def add_alias_to_db(name, alias):
     alias = alias.lower() #for searchability
     col = db["aliases"]
@@ -94,11 +106,13 @@ def add_alias_to_db(name, alias):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+
 def get_aliases():
     col = db["aliases"]
     res = col.find()
     return {x["alias"]: x["name"] for x in res} #returns a dict for searchability
 
+ 
 @validate_game
 def set_game_attr(game, key, value):
     #game is the column, key is the row, value is the value to update
@@ -108,6 +122,7 @@ def set_game_attr(game, key, value):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
+  
 @validate_game
 def get_game_attr(game, key):
     col = db["game_attr"]
@@ -116,6 +131,7 @@ def get_game_attr(game, key):
     if res is None:
         return None
     return res["value"]
+
 
 @validate_game
 def wipe_game_db(game):

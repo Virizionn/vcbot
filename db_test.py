@@ -49,6 +49,6 @@ for i in range(11, 21):
     v = vote.vote("voter2", "target", "url", i)
     add_vote_to_db("A", v)
 
-#Then, get votes from "voter"
+# Then, get votes from "voter"
 print(get_votes_by_voter("A", "voter"))
 
