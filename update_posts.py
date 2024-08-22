@@ -111,7 +111,7 @@ def update_game(game):
 
     for post in new_posts:
         if post.postnum > last_post_number:
-            add_post_to_db(post, game)
+            add_post_to_db(game, post)
 
             #check for votes
             message = post.HTML
@@ -130,10 +130,10 @@ def update_game(game):
             target = matches[-1].strip() if matches else None
 
             if target != None:
+                target = target.replace("@", "")
                 v = vote(post.author, target, "google.ca", post.postnum, game)
                 print(post.author, target, "google.ca", post.postnum, game)
-                add_vote_to_db(v, game)
+                add_vote_to_db(game, v)
     
 
     return
-
