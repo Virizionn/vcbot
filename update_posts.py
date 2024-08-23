@@ -28,11 +28,8 @@ def read_from_last(url, last_page_number):
                 "message-attribution-opposite message-attribution-opposite--list"
             }).text.replace(",", "").replace("\n", "").replace(
                 "#", ""))  #first post number of the page
-       
-        print("Scraping page {} with first post number {}".format(i, firstpostnumber))
 
         if firstpostnumber == prev_post_number:
-            print("Detected end of thread.")
             break
 
         prev_post_number = firstpostnumber
@@ -117,7 +114,6 @@ def update_game(game):
             if target != None:
                 target = target.replace("@", "")
                 v = vote(post.author, target, "google.ca", post.postnum)
-                print(post.author, target, "google.ca", post.postnum, game)
                 add_vote_to_db(game, v)
     
 
