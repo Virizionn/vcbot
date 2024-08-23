@@ -6,22 +6,7 @@ import re
 
 from database import get_all_posts, add_post_to_db, add_vote_to_db, get_game_attr
 
-#These definitions match database.py
-class post:  #object to store post data
-    def __init__(self, id, author, HTML, postnum, date):
-      self.id = id
-      self.author = author
-      self.HTML = HTML
-      self.postnum = postnum
-      self.date = date
-
-class vote: #store votes
-    def __init__(self, voter, target, url, postnum, game):
-        self.voter = voter
-        self.target = target
-        self.url = url
-        self.postnum = postnum
-        self.game = game
+from object_types import vote, post
 
 #read_from_last reads all posts from the last read page to the current page and returns the posts as a list.
 def read_from_last(url, last_page_number):
@@ -77,7 +62,7 @@ def read_from_last(url, last_page_number):
 
             #add post to list
             scrapedPosts.append(
-                post(postid, username, str(message), postnumber, postdate))
+                post(username, postnumber, postid, postdate, str(message)))
           
     return scrapedPosts
 
@@ -131,7 +116,7 @@ def update_game(game):
 
             if target != None:
                 target = target.replace("@", "")
-                v = vote(post.author, target, "google.ca", post.postnum, game)
+                v = vote(post.author, target, "google.ca", post.postnum)
                 print(post.author, target, "google.ca", post.postnum, game)
                 add_vote_to_db(game, v)
     
