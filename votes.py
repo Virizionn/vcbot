@@ -84,7 +84,7 @@ def get_votecount(game, postnum):
     for target in votecount.keys():
         output += "({}) {}: ".format(len(votecount[target]), target)
         for vote in votecount[target]:
-            output += "{}, ".format(vote['voter'])
+            output += "{}, ".format(vote['voter'].title())
         output = output[:-2] + "\n"
 
     if hammer != None:
