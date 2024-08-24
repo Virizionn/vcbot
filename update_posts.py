@@ -36,11 +36,8 @@ def read_from_last(url, last_page_number):
                 "message-attribution-opposite message-attribution-opposite--list"
             }).text.replace(",", "").replace("\n", "").replace(
                 "#", ""))  #first post number of the page
-       
-        print("Scraping page {} with first post number {}".format(i, firstpostnumber))
 
         if firstpostnumber == prev_post_number:
-            print("Detected end of thread.")
             break
 
         prev_post_number = firstpostnumber
