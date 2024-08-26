@@ -26,8 +26,6 @@ def get_votecount(game, postnum):
         if postnum >= phase['postnum']:
             current_phase = phase
             break
-    
-    print("Getting votecount for phase {}".format(current_phase['phase']))
 
     og_playerlist = update_posts.get_original_playerlist(game)
     aliases = database.get_aliases()            

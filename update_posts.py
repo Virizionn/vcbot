@@ -145,8 +145,6 @@ def scrape_playerlist(game):
         playerlist.append(player)
         text = text[text.find('\n'):]
 
-    print(playerlist)
-
     #in sh, open tab "Game {}"
     ws = sh.worksheet("Game {}".format(game))
 
