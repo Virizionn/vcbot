@@ -89,7 +89,14 @@ def add_phase_to_db(game, phase):
     col.update_one(myquery, newvalues, upsert=True)
     return
 
-  
+
+@validate_game
+def remove_phase_from_db(game, phase_name):
+    col = db["phases"]
+    myquery = { "phase": phase_name, "game": game }
+    col.delete_one(myquery)
+
+
 @validate_game
 def get_phases(game):
     col = db["phases"]
@@ -144,4 +151,21 @@ def wipe_game_db(game):
     col = db["votes"]
     q = { "game": game }
     col.delete_many(q)
+    #delete all phases
+    col = db["phases"]
+    q = { "game": game }
+    col.delete_many(q)
+
+    set_game_attr(game, "update_interval", 300)
+    set_game_attr(game, "update_toggle", False)
+    set_game_attr(game, "update_now_requested", False)
+
+    add_phase_to_db(game, Phase(1, "Opening Post"))
+    return
+
+def clear_db_factory_defaults():
+    for game in ['A', 'B', 'C']:
+        wipe_game_db(game)
+        set_game_attr(game, "url", "https://hypixel.net/threads/hypixel-mini-mafia-iii-logical-fallacies-edition-game-over-town-wins.1857318/page-")
+    
     return

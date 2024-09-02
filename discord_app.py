@@ -2,68 +2,79 @@ from typing import Literal
 
 import discord
 from discord import app_commands
+from discord.ext import tasks
 
 import json
+import random
 
 import database
+from custom_types import Vote, Post, Phase
+
+import aerosync_commands
 
 async def updateStatus(status):
   game = discord.Game(status)
   await client.change_presence(status=discord.Status.online, activity=game)
-  print("Updated status to {}".format(status))
   return
-
-def is_host(interaction: discord.Interaction) -> bool:
-  for role in interaction.user.roles:
-    if (role.name in ["Mafia", "Puppeteer (Host)", "God"]):
-      print("Passed check.")
-      return True
-  print("FAILED check.")
-  return False
 
 intents = discord.Intents.default()
 intents.message_content = True
-test_guild = discord.Object(id="951678432494911528")
-help_message = discord.Embed(colour=discord.Color.teal(),
-                             description="""WIP""")
 
+test_guild = discord.Object(id="951678432494911528")
 
 client = discord.Client(intents=intents)
+
 tree = app_commands.CommandTree(client)
+tree.add_command(aerosync_commands.god())
+tree.add_command(aerosync_commands.game())
+tree.add_command(aerosync_commands.update())
+tree.add_command(aerosync_commands.game_phase())
+tree.add_command(aerosync_commands.alias())
+tree.add_command(aerosync_commands.special())
 
-@tree.command()
-@app_commands.check(is_host)
-@app_commands.describe(game='Available Games', url="game url")
-async def url(interaction: discord.Interaction, game: Literal['A', 'B', 'C'], url: str):
-    database.wipe_game_db(game)
-    #sample urls
-    #https://hypixel.net/threads/hypixel-mafia-lxxv-pokemon-mafia-upick-day-2.5718601/
-    #https://hypixel.net/threads/hypixel-mafia-lxxv-pokemon-mafia-upick-day-5.5718601/page-345
 
-    #if it's the first, we need to add page-1 to the end
-    #if it's the second, we need to remvoe the page-3 from the end (so it ends in page-)
-    #use a regex to figure out which one it is
-    if url[-1] == "/":
-      url += "page-"
-    else:
-       #remove the page number, arbitrarily length
-       url = url[:url.rfind("page-")] + "page-"
-    database.set_url(game, url)
 
+@client.event
+async def tree_eh(interaction, error):
+  if isinstance(error, discord.app_commands.CheckFailure):
+    error = "Error. To use this command, you must have role `God`, `Puppeteer (Host)`, or `Mafia`."
+  try:
     await interaction.response.send_message(
-        'Wiped post database and Set url for game {} to {}.'.format(game, url))
+        embed=discord.Embed(color=discord.Color.red(), description=error))
+  except:
+    await interaction.channel.send(
+        embed=discord.Embed(color=discord.Color.red(), description=error))
+
+tree.on_error = tree_eh
+
+
+@tasks.loop(minutes = 10)
+async def myLoop():
+  status_options = ["Threadcamping", "on MafiaUniverse", "Town of Salem", "AmongUs", "Forum Ghosting", "Bandwagoning"]
+  await updateStatus(random.choice(status_options))
+
 
 @client.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    #start task loop
+    myLoop.start()
+    await updateStatus("Threadcamping")
+
 
 #message event - check if a message is equal to #sync
 @client.event
 async def on_message(message):
-   if message.text == "$sync":
+    if message.content == "$sync":
         #global sync discord command tree
-        tree.sync()
+        await tree.sync()
         await message.channel.send("Global synced command tree.")
+
+    if message.content == "$sync local":
+        #local sync discord command tree
+        tree.clear_commands(guild=test_guild)
+        tree.copy_global_to(guild=test_guild)
+        await tree.sync(guild=test_guild)
+        await message.channel.send("Local synced command tree. Note that this doesn't globally sync the command tree.")
 
 
 #read discord token from Credentials/discord_secret.json
