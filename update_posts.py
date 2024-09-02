@@ -7,7 +7,7 @@ import gspread
 import time
 import random
 
-from ctypes import Post, Vote
+from custom_types import Post, Vote
 import database
 
 gc = gspread.service_account(filename="Credentials/google_secret.json")

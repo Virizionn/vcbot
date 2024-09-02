@@ -2,7 +2,7 @@
 from database import add_alias_to_db, add_phase_to_db, add_post_to_db, add_vote_to_db, \
                      set_game_attr, get_game_attr, get_votes_by_range, get_votes_by_voter
 import time
-from ctypes import Vote, Post, Phase
+from custom_types import Vote, Post, Phase
 
 # test adding a vote
 v = Vote("voter", "target", "url", 1, "A")
