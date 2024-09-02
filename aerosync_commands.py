@@ -4,6 +4,7 @@ from discord import app_commands
 
 from custom_types import Phase
 import database
+from votes import get_votecount
 
 def is_host(interaction: discord.Interaction) -> bool:
   for role in interaction.user.roles:
@@ -84,10 +85,10 @@ class update(app_commands.Group):
     async def toggle(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], toggle: Literal['on', 'off']):
         if toggle == "on":
             database.set_game_attr(game, "update_toggle", True)
+            await interaction.response.send_message('Set update toggle for game **{}** to **{}**. Update interval is currently set to **{}** minutes. Remember to update the phases!'.format(game, database.get_game_attr('A', toggle, 'interval')))
         if toggle == "off":
             database.set_game_attr(game, "update_toggle", False)
-
-        await interaction.response.send_message('Set update toggle for game {} to {}. Remember to update the phases!'.format(game, toggle))
+            await interaction.response.send_message('Set update toggle for game **{}** to **{}**.'.format(game, toggle))
 
     #set interval for updating posts
     @app_commands.command()
@@ -96,7 +97,7 @@ class update(app_commands.Group):
     async def interval(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], interval: int):
         database.set_game_attr(game, "interval", interval)
 
-        await interaction.response.send_message('Set interval for game {} to {} minutes.'.format(game, interval))
+        await interaction.response.send_message('Set interval for game **{}** to **{}** minutes.'.format(game, interval))
 
     #DATABASE COMMANDS - PUBLIC USE
 
@@ -161,6 +162,32 @@ class alias(app_commands.Group):
         embed = discord.Embed(colour=discord.Color.teal(), description=text)
         await interaction.response.send_message(embed=embed)
 
+class votecount(app_commands.Group):
+    #get retrospective votecount
+    @app_commands.command()
+    @app_commands.describe(game='Available Games', phase="Post Number")
+    async def get_retrospective(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], postnum: int):
+        votecount = get_votecount(game, postnum)
+        embed = discord.Embed(colour=discord.Color.orange(), description=votecount)
+        await interaction.response.send_message(embed=embed)
+    
+    #get current votecount
+    @app_commands.command()
+    @app_commands.describe(game='Available Games')
+    async def get_current(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
+        votecount = get_votecount(game, float('inf'))
+        embed = discord.Embed(colour=discord.Color.orange(), description=votecount)
+        await interaction.response.send_message(embed=embed) 
+
+    #list all aliases
+    @app_commands.command()
+    async def list(self, interaction: discord.Interaction):
+        aliases = database.get_aliases()
+        text = "**Aliases:**\n"
+        for alias, name in aliases.items():
+            text += "{}-> {}\n".format(alias, name)
+        embed = discord.Embed(colour=discord.Color.teal(), description=text)
+        await interaction.response.send_message(embed=embed)
 #SPECIAL COMMANDS - PUBLIC USE
 class special(app_commands.Group):
     #help command

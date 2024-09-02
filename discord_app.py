@@ -31,6 +31,7 @@ tree.add_command(aerosync_commands.update())
 tree.add_command(aerosync_commands.game_phase())
 tree.add_command(aerosync_commands.alias())
 tree.add_command(aerosync_commands.special())
+tree.add_command(aerosync_commands.votecount())
 
 
 

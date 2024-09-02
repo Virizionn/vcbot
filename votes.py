@@ -78,7 +78,7 @@ def get_votecount(game, postnum):
 
     # format votecount
     
-    output = "{} Votecount:\n".format(current_phase['phase'])
+    output = "{} Votecount (as of post {}):\n".format(current_phase['phase'], postnum)
     # sort the votecount by number of votes, high to low
     votecount = dict(sorted(votecount.items(), key=lambda item: len(item[1]), reverse=True))
     for target in votecount.keys():
