@@ -1,7 +1,7 @@
 import pymongo
 from functools import wraps
 
-from ctypes import Vote, Post, Phase
+from custom_types import Vote, Post, Phase
 
 
 # Define a decorator to validate 'game' entries

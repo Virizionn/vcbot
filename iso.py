@@ -1,7 +1,7 @@
 # This file contains functions for working with ISOs.
 
 from database import get_posts_by_authors
-from ctypes import Post
+from custom_types import Post
 
 
 # get_iso takes a list of players (at least one), and returns a list of all posts by those players.
