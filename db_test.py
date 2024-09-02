@@ -5,7 +5,7 @@ import time
 from ctypes import Vote, Post, Phase
 
 # test adding a vote
-v = Vote("voter", "target", "url", 1)
+v = Vote("voter", "target", "url", 1, "A")
 add_vote_to_db("A", v)
 
 # test adding a post
@@ -34,7 +34,7 @@ print(get_game_attr("A", "nonexistent_key"))
 # test getting votes from a range
 # First, add 10 votes, with postnum 1-10
 for i in range(1, 11):
-    v = Vote("voter", "target", "url", i)
+    v = Vote("voter", "target", "url", i, "A")
     add_vote_to_db("A", v)
 
 # Then, get votes from 5-7
@@ -43,10 +43,10 @@ print(get_votes_by_range("A", 5, 7))
 # test getting votes by player
 # First, add votes from 1-10, with voter "voter", and from 11-20, with voter "voter2"
 for i in range(1, 11):
-    v = Vote("voter", "target", "url", i)
+    v = Vote("voter", "target", "url", i, "A")
     add_vote_to_db("A", v)
 for i in range(11, 21):
-    v = Vote("voter2", "target", "url", i)
+    v = Vote("voter2", "target", "url", i, "A")
     add_vote_to_db("A", v)
 
 # Then, get votes from "voter"
