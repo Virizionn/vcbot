@@ -35,7 +35,6 @@ def get_votes_by_range(game, start, end):
     res = sorted(res, key=lambda x: x["postnum"])
     return list(res)
 
-
 @validate_game
 def get_all_votes(game):
     col = db["votes"]
@@ -79,6 +78,11 @@ def get_all_posts(game):
     res = col.find({ "game": game })
     return list(res)
 
+@validate_game
+def get_latest_post(game):
+    col = db["posts"]
+    res = col.find({ "game": game }).sort("postnum", -1).limit(1)
+    return list(res)[0]
   
 @validate_game
 def add_phase_to_db(game, phase):

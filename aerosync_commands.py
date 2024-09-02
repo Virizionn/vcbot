@@ -176,7 +176,7 @@ class votecount(app_commands.Group):
     @app_commands.describe(game='Available Games')
     async def get_current(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
         votecount = get_votecount(game, float('inf'))
-        embed = discord.Embed(colour=discord.Color.orange(), description=votecount)
+        embed = discord.Embed(colour=discord.Color.green(), description=votecount)
         await interaction.response.send_message(embed=embed) 
 
     #list all aliases
