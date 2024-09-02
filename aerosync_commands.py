@@ -165,7 +165,7 @@ class alias(app_commands.Group):
 class votecount(app_commands.Group):
     #get retrospective votecount
     @app_commands.command()
-    @app_commands.describe(game='Available Games', phase="Post Number")
+    @app_commands.describe(game='Available Games', postnum="Post Number")
     async def get_retrospective(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], postnum: int):
         votecount = get_votecount(game, postnum)
         embed = discord.Embed(colour=discord.Color.orange(), description=votecount)
