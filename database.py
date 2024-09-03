@@ -2,11 +2,11 @@ import os
 import certifi
 
 from pymongo import MongoClient
+import dns.resolver
 from dotenv import load_dotenv
 from functools import wraps
 
 from custom_types import Vote, Post, Phase
-
 
 # Define a decorator to validate 'game' entries
 def validate_game(func):
@@ -19,9 +19,12 @@ def validate_game(func):
     return wrapper
 
 load_dotenv()
+
+dns.resolver.default_resolver=dns.resolver.Resolver(configure=False)
+dns.resolver.default_resolver.nameservers=['8.8.8.8']
+
 MONGO_URI = os.getenv("MONGO_URI")
-ca = certifi.where()
-client = MongoClient(MONGO_URI, tlsCAFile=ca) # For production. Needs a .env file with MONGO_URI.
+client = MongoClient(MONGO_URI) # For production. Needs a .env file with MONGO_URI.
 #client = MongoClient("mongodb://localhost:27017/") # For testing, uses local mongo DB
 
 db = client["mafia"]
