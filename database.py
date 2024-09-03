@@ -1,4 +1,8 @@
-import pymongo
+import os
+import certifi
+
+from pymongo import MongoClient
+from dotenv import load_dotenv
 from functools import wraps
 
 from custom_types import Vote, Post, Phase
@@ -14,8 +18,12 @@ def validate_game(func):
         return func(game, *args, **kwargs)
     return wrapper
 
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
+ca = certifi.where()
+client = MongoClient(MONGO_URI, tlsCAFile=ca) # For production. Needs a .env file with MONGO_URI.
+#client = MongoClient("mongodb://localhost:27017/") # For testing, uses local mongo DB
 
-client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["mafia"]
 
 
