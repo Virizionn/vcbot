@@ -82,6 +82,16 @@ def get_posts_by_authors(game, authors):
     res = col.find({ "game": game, "author": { "$in": authors } }).sort("postnum", 1)
     return list(res)
 
+@validate_game
+def get_authors(game, start, end):
+    #return authors and how many posts they have made
+    col = db["posts"]
+    res = col.aggregate([
+        { "$match": { "game": game, "postnum": { "$gte": start, "$lte": end } } },
+        { "$group": { "_id": "$author", "count": { "$sum": 1 } } }
+    ])
+    res = sorted(res, key=lambda x: x["count"], reverse=True)
+    return list(res)
 
 @validate_game
 def get_all_posts(game):
