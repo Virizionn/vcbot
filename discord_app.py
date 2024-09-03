@@ -1,6 +1,7 @@
 from typing import Literal
 import os
 import random
+from dotenv import load_dotenv, find_dotenv
 
 import discord
 from discord import app_commands
@@ -76,7 +77,7 @@ async def on_message(message):
         await tree.sync(guild=test_guild)
         await message.channel.send("Local synced command tree. Note that this doesn't globally sync the command tree.")
 
-
+load_dotenv()
 #get env variable called AEROSYNC_DISCORD_TOKEN
 token = os.getenv("AEROSYNC_DISCORD_TOKEN")
 
