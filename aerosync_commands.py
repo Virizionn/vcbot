@@ -188,6 +188,7 @@ class votecount(app_commands.Group):
             text += "{}-> {}\n".format(alias, name)
         embed = discord.Embed(colour=discord.Color.teal(), description=text)
         await interaction.response.send_message(embed=embed)
+        
 #SPECIAL COMMANDS - PUBLIC USE
 class special(app_commands.Group):
     #help command

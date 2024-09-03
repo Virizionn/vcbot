@@ -94,12 +94,16 @@ def get_votecount(game, postnum):
     if "Not voting" in votecount.keys():
         not_voting = votecount.pop("Not voting")
         votecount["Not voting"] = not_voting
+
     for target in votecount.keys():
         if target == "Not voting":
-            output += "\n"
-        output += "({}) {}: ".format(len(votecount[target]), target)
-        for vote in votecount[target]:
-            output += "{}, ".format(vote['voter'].title())
+            output += "\n({}) {}: ".format(len(votecount[target]), target)
+            for vote in votecount[target]:
+                output += "{}, ".format(vote['voter'].title())
+        else:
+            output += "({}) {}: ".format(len(votecount[target]), target)
+            for vote in votecount[target]:
+                output += "[{}]({}), ".format(vote['voter'].title(), vote['url'])
         output = output[:-2] + "\n"
 
     output = output.replace('\n\n\n', '\n\n')

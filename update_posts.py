@@ -91,9 +91,8 @@ def update_game(game):
         last_post_number = 0
         last_page_number = 1
 
-    # need to update this to get the actual thread url from database
-    url = database.get_game_attr(game, "url")
-    new_posts = read_from_last(url, last_page_number)
+    game_url = database.get_game_attr(game, "url")
+    new_posts = read_from_last(game_url, last_page_number)
 
     for post in new_posts:
         if post.postnum > last_post_number:
@@ -115,9 +114,11 @@ def update_game(game):
             matches = re.findall(r'\[vote\](.*?)\[/vote\]', text, re.IGNORECASE | re.DOTALL)
             target = matches[-1].strip() if matches else None
 
+            vote_url = game_url.replace("page-", "post-") + str(post.id)
+
             if target is not None:
                 target = target.replace("@", "").lower()
-                v = Vote(post.author, target, "google.ca", post.postnum, game)
+                v = Vote(post.author, target, vote_url, post.postnum, game)
                 database.add_vote_to_db(game, v)
 
     return

@@ -1,11 +1,10 @@
 from typing import Literal
+import os
+import random
 
 import discord
 from discord import app_commands
 from discord.ext import tasks
-
-import json
-import random
 
 import database
 from custom_types import Vote, Post, Phase
@@ -78,11 +77,8 @@ async def on_message(message):
         await message.channel.send("Local synced command tree. Note that this doesn't globally sync the command tree.")
 
 
-#read discord token from Credentials/discord_secret.json
-with open("Credentials/discord_secret.json") as f:
-    data = json.load(f)
-    token = data["token"]
+#get env variable called AEROSYNC_DISCORD_TOKEN
+token = os.getenv("AEROSYNC_DISCORD_TOKEN")
 
 client.run(token)
-
 
