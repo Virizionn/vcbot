@@ -19,6 +19,15 @@ update_time_log_A = 0
 update_time_log_B = 0
 update_time_log_C = 0
 
+def try_update(game):
+    database.set_game_attr(game, "update_now_requested", "Updating now")
+    try:
+        update_posts.update_game(game)
+    except Exception as e:
+        print(e)
+    database.set_game_attr(game, "update_now_requested", False)
+    
+    return
 
 # Scheduler job for checking if updates are desired. Pulled every 10 seconds.
 @scheduler.task('interval', id='do_job_A', seconds=10, misfire_grace_time=900)
@@ -31,10 +40,9 @@ def job_A():
             # get current time since epoch
             if int(time.time()) > update_time_log_A + database.get_game_attr(game, "update_interval"):
                 update_time_log_A = int(time.time())
-                update_posts.update_game(game)
+                try_update(game)
         if database.get_game_attr(game, "update_now_requested"):
-            database.set_game_attr(game, "update_now_requested", False)
-            update_posts.update_game(game)
+            try_update(game)
 
 
 @app.route("/")

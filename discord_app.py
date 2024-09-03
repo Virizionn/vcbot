@@ -29,10 +29,10 @@ tree.add_command(aerosync_commands.god())
 tree.add_command(aerosync_commands.game())
 tree.add_command(aerosync_commands.update())
 tree.add_command(aerosync_commands.game_phase())
+tree.add_command(aerosync_commands.rank_activity())
 tree.add_command(aerosync_commands.alias())
 tree.add_command(aerosync_commands.special())
 tree.add_command(aerosync_commands.votecount())
-
 
 
 @client.event

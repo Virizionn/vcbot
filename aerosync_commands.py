@@ -24,7 +24,8 @@ help_message = discord.Embed(colour=discord.Color.teal(),
                             `/alias list` - List all aliases.
 
                             `/game url <game> <url>` - Set the URL for a game.
-                            
+                            `/game scrape_playerlist <game>` - Populate list of living players.
+
                             `/update toggle <game> <on/off>` - Toggle updates on or off.
                             `/update interval <game> <interval>` - Set the interval for updating posts.
                             `/update now <game>` - Request an immediate update.
@@ -33,11 +34,16 @@ help_message = discord.Embed(colour=discord.Color.teal(),
                             `/game_phase remove <game> <phase_name>` - Remove a phase from a game.
                             `/game_phase list <game>` - List all phases for a game.
 
-                            `/alias add <name> <alias>` - Add an alias for a player.
-                            `/alias list` - List all aliases.
+                            `/votecount get_retrospective <game> <postnum>` - Get retrospective votecount.
+                            `/votecount get_current <game>` - Get current votecount.
+                            `/votecount list` - List all aliases.
+
+                            `/rank_activity all <game>` - Rank activity for all time.
+                            `/rank_activity today <game>` - Rank activity for today.
 
                             `/special help` - Display this help message.
                             `/special ping` - Check if the bot is still running.
+                            `/special web` - Give link to web interface.
 
                              Accurate votecounts rely on maintaining the list of living players. [Spreadsheet link](https://docs.google.com/spreadsheets/d/1nEDOQnXse2B5DZktZmmJKolFNLpkFFbLURNQdtPyS3Q/edit?usp=sharing)
                              """)
@@ -75,6 +81,14 @@ class game(app_commands.Group):
 
         await interaction.response.send_message(
             'Wiped post database and Set url for game {} to {}.'.format(game, url))
+        
+    #populate list of living players
+    @app_commands.command()
+    @app_commands.check(is_host)
+    @app_commands.describe(game='Available Games')
+    async def scrape_playerlist(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
+        database.scrape_playerlist(game)
+        await interaction.response.send_message('Scraped playerlist for game {}.'.format(game))
 
 
 class update(app_commands.Group):
@@ -167,17 +181,25 @@ class votecount(app_commands.Group):
     @app_commands.command()
     @app_commands.describe(game='Available Games', postnum="Post Number")
     async def get_retrospective(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], postnum: int):
-        votecount = get_votecount(game, postnum)
-        embed = discord.Embed(colour=discord.Color.orange(), description=votecount)
-        await interaction.response.send_message(embed=embed)
-    
+        #check if channel name is votecount-game-X
+        if interaction.channel.name == "votecount-game-{}".format(game):
+            votecount = get_votecount(game, postnum)
+            embed = discord.Embed(colour=discord.Color.orange(), description=votecount.replace("_",""))
+            await interaction.response.send_message(embed=embed)
+        else:
+            #send an ephemeral message
+            await interaction.response.send_message("Please use this command in the right channel!", ephemeral=True)
+
     #get current votecount
     @app_commands.command()
     @app_commands.describe(game='Available Games')
     async def get_current(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
-        votecount = get_votecount(game, float('inf'))
-        embed = discord.Embed(colour=discord.Color.green(), description=votecount)
-        await interaction.response.send_message(embed=embed) 
+        if interaction.channel.name == "votecount-game-{}".format(game):
+            votecount = get_votecount(game, float('inf'))
+            embed = discord.Embed(colour=discord.Color.green(), description=votecount.replace("_",""))
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("Please use this command in the right channel!", ephemeral=True) 
 
     #list all aliases
     @app_commands.command()
@@ -188,7 +210,40 @@ class votecount(app_commands.Group):
             text += "{}-> {}\n".format(alias, name)
         embed = discord.Embed(colour=discord.Color.teal(), description=text)
         await interaction.response.send_message(embed=embed)
-        
+
+#ISO COMMANDS - PUBLIC USE
+class rank_activity(app_commands.Group):
+    #rank activity
+    @app_commands.command()
+    @app_commands.describe(game='Available Games')
+    async def all(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
+        if interaction.channel.name != "iso-bot":
+            await interaction.response.send_message("Please use this command in the iso-bot channel!", ephemeral=True)
+        else:
+            ranking = database.get_authors(game, 1, float('inf'))
+            text = "**Activity ranking for game {}:**\n".format(game)
+            for row in ranking:
+                text += "{}: {}\n".format(row["_id"], row["count"])
+            embed = discord.Embed(colour=discord.Color.teal(), description=text.replace("_",""))
+            await interaction.response.send_message(embed=embed)
+
+    #rank activity today
+    @app_commands.command()
+    @app_commands.describe(game='Available Games')
+    async def today(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
+        if interaction.channel.name != "iso-bot":
+            await interaction.response.send_message("Please use this command in the iso-bot channel!", ephemeral=True)
+        else:
+            phase = database.get_phases(game)[-1]
+            ranking = database.get_authors(game, phase['postnum'], float('inf'))
+            text = "**{} activity ranking for game {}:**\n".format(phase['phase'], game)
+            for row in ranking:
+                text += "{}: {}\n".format(row["_id"], row["count"])
+            embed = discord.Embed(colour=discord.Color.teal(), description=text.replace("_",""))
+
+            await interaction.response.send_message(embed=embed) 
+
+
 #SPECIAL COMMANDS - PUBLIC USE
 class special(app_commands.Group):
     #help command
@@ -200,3 +255,8 @@ class special(app_commands.Group):
     @app_commands.command()
     async def ping(self, interaction: discord.Interaction):
         await interaction.response.send_message("Still here!")
+
+    #give link to web interface
+    @app_commands.command()
+    async def web(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Web interface: {}".format('WIP'))
