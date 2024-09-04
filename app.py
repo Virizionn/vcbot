@@ -1,7 +1,10 @@
 from flask import Flask, render_template
 from flask_apscheduler import APScheduler
 from iso import get_iso
+from votes import get_votecount, get_vote_history
+
 from custom_types import Post
+import re
 
 app = Flask(__name__)
 scheduler = APScheduler()
@@ -15,35 +18,44 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 def job1():
     print('Posts updated (NOT IMPLEMENTED)')
 
-
-
-# https://github.com/HyperbolicStudios/YYJ-Bus-Speed-Tracker/blob/main/app.py
-# Use above as an example
-
-# set up scheduler for votecount updates
-#@scheduler.task('interval', id='do_job_1', seconds=10, misfire_grace_time=900)
-# REQUIRED FUNCTION: Must be able to update votecounts for all games
+def replace(match):
+        playername = match.group(1)
+        url = match.group(2)
+        return f'<a href="{url}">{playername}</a>'
 
 # Set up endpoint for votecount
-#@app.route('/<game>/votecount')
-# REQUIRED FUNCTION: Must be able to create a retrospective votecount for any post
-
+@app.route('/<game>/votecount')
+def vc(game):
+    temp_vc = get_votecount(game, 100000)
+    pattern = r'\[([^\]]+)\]\((https?://[^\)]+)\)'
+    vc = re.sub(pattern, replace, temp_vc)
+    vc = vc.replace("\n", "<br>")
+    vc = vc.replace("**", "")
+    vc = vc.replace("as of post 100000", "Most recent")
+    return render_template('votecount.html', votecount=vc)
 
 # Set up endpoint for retrospective votecount
-#@app.route('/<game>/votecount/<postnum>')
-# REQUIRED FUNCTION: Must be able to create a retrospective votecount for any post
-
+@app.route('/<game>/votecount/<postnum>')
+def past_vc(game, postnum):
+    temp_vc = get_votecount(game, int(postnum))
+    pattern = r'\[([^\]]+)\]\((https?://[^\)]+)\)'
+    vc = re.sub(pattern, replace, temp_vc)
+    vc = vc.replace("\n", "<br>")
+    vc = vc.replace("**", "")
+    return render_template('votecount.html', votecount=vc)
 
 # Set up endpoint for vote history
-#@app.route('/<game>/votes')
-# REQUIRED FUNCTION: Must be able to collect all votes placed this game
+@app.route('/<game>/votes')
+def history(game):
+    history = get_vote_history(game)
+    return render_template('votehistory.html', history=history)
 
 
 # Set up endpoint for targeted ISO
 @app.route('/<game>/iso/<target>')
 def iso(game, target):
     # take target, append it to a list of targets containing only that target
-    targets = [target]
+    targets = [target.lower()]
     posts = get_iso(targets, game)
     articles = []
     for post in posts:
