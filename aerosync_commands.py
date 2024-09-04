@@ -5,6 +5,7 @@ from discord import app_commands
 from custom_types import Phase
 import database
 from votes import get_votecount
+from queue_manager import get_queue
 
 def is_host(interaction: discord.Interaction) -> bool:
   for role in interaction.user.roles:
@@ -17,6 +18,11 @@ def is_developer(interaction: discord.Interaction) -> bool:
     if (role.name in ["God"]):
       return True
   return False
+
+def search_role_by_name(guild, role_name):
+    for role in guild.roles:
+        if role_name in role.name:
+            return role
 
 help_message = discord.Embed(colour=discord.Color.teal(),
                              description="""**Commands:**
@@ -260,3 +266,38 @@ class special(app_commands.Group):
     @app_commands.command()
     async def web(self, interaction: discord.Interaction):
         await interaction.response.send_message("Web interface: {}".format('WIP'))
+
+#QUEUE COMMANDS - RESTRICTED USE (Host, Puppeteer, God)
+class queue(app_commands.Group):
+    @app_commands.command()
+    @app_commands.check(is_host)
+    async def update(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Updating!", ephemeral=True)
+
+        for guild in interaction.client.guilds:
+            content = get_queue()
+            lawyer_role = search_role_by_name(guild, "Lawyer")
+            paralegal_role = search_role_by_name(guild, "Paralegal")
+            
+            lawyers = [member for member in guild.members if lawyer_role in member.roles]
+            paralegals = [member for member in guild.members if paralegal_role in member.roles]
+            
+            content = content + f"**Setup Reviewers:**\n{lawyer_role.mention}: "
+            for lawyer in lawyers:
+                content = content + lawyer.display_name + ", "
+            content = content[:-2]
+
+            content = content + f"\n{paralegal_role.mention}: "
+            for paralegal in paralegals:
+                content = content + paralegal.display_name + ", "
+            content = content[:-2]
+
+            for channel in guild.channels:
+                if channel.name == "mafia-hosting-queues":
+                    history = [msg async for msg in channel.history(limit=123)]
+                    history = [msg for msg in history if msg.author == interaction.client.user]
+                    if len(history) == 0:
+                        msg = await channel.send(content)
+                    else:
+                        msg = history[-1]
+                        await msg.edit(content=content)

@@ -19,6 +19,7 @@ async def updateStatus(status):
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 test_guild = discord.Object(id="951678432494911528")
 
@@ -33,6 +34,7 @@ tree.add_command(aerosync_commands.rank_activity())
 tree.add_command(aerosync_commands.alias())
 tree.add_command(aerosync_commands.special())
 tree.add_command(aerosync_commands.votecount())
+tree.add_command(aerosync_commands.queue())
 
 
 @client.event
