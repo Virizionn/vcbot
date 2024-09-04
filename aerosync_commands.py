@@ -5,6 +5,7 @@ from discord import app_commands
 from custom_types import Phase
 import database
 from votes import get_votecount
+from queue_manager import get_queue
 
 def is_host(interaction: discord.Interaction) -> bool:
   for role in interaction.user.roles:
@@ -12,11 +13,16 @@ def is_host(interaction: discord.Interaction) -> bool:
       return True
   return False
 
-def is_developer(interaction: discord.Interaction) -> bool:
+def is_moderator(interaction: discord.Interaction) -> bool:
   for role in interaction.user.roles:
-    if (role.name in ["God"]):
+    if (role.name in ["God", "Mafia"]):
       return True
   return False
+
+def search_role_by_name(guild, role_name):
+    for role in guild.roles:
+        if role_name in role.name:
+            return role
 
 help_message = discord.Embed(colour=discord.Color.teal(),
                              description="""**Commands:**
@@ -36,7 +42,9 @@ help_message = discord.Embed(colour=discord.Color.teal(),
 
                             `/votecount get_retrospective <game> <postnum>` - Get retrospective votecount.
                             `/votecount get_current <game>` - Get current votecount.
-                            `/votecount list` - List all aliases.
+
+                            `/alias add <name> <alias>` - Add an alias for a player.
+                            `/alias list` - List all aliases.
 
                             `/rank_activity all <game>` - Rank activity for all time.
                             `/rank_activity today <game>` - Rank activity for today.
@@ -45,14 +53,20 @@ help_message = discord.Embed(colour=discord.Color.teal(),
                             `/special ping` - Check if the bot is still running.
                             `/special web` - Give link to web interface.
 
+                            `/queue update` - Update the queue messages in all guilds. (Mod only)
+                            
+                            `/god factory_reset` - Wip and reset database to factory defaults. (Mod only)
+
                              Accurate votecounts rely on maintaining the list of living players. [Spreadsheet link](https://docs.google.com/spreadsheets/d/1nEDOQnXse2B5DZktZmmJKolFNLpkFFbLURNQdtPyS3Q/edit?usp=sharing)
+
+                             Link to web ISO/VC interface: `WIP`
                              """)
 
-#DEVELOPER COMMANDS - RESTRICTED USE (God)
+#MODERATOR COMMANDS - RESTRICTED USE (God, Mafia)
 class god(app_commands.Group):
     #Wipe the entire database and reset to factory defaults
     @app_commands.command()
-    @app_commands.check(is_developer)
+    @app_commands.check(is_moderator)
     async def factory_reset(self, interaction: discord.Interaction):
         database.clear_db_factory_defaults()
         await interaction.response.send_message('Factory reset complete. All games wiped and reset to factory defaults.')
@@ -249,7 +263,7 @@ class special(app_commands.Group):
     #help command
     @app_commands.command()
     async def help(self, interaction: discord.Interaction):
-        await interaction.response.send_message(embed=help_message)
+        await interaction.response.send_message(embed=help_message, ephemeral=True)
 
     #ping command
     @app_commands.command()
@@ -259,4 +273,39 @@ class special(app_commands.Group):
     #give link to web interface
     @app_commands.command()
     async def web(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Web interface: {}".format('WIP'))
+        await interaction.response.send_message("Web interface: {}".format('WIP'), ephemeral=True)
+
+#QUEUE COMMANDS - RESTRICTED USE (Host, Puppeteer, God)
+class queue(app_commands.Group):
+    @app_commands.command()
+    @app_commands.check(is_moderator)
+    async def update(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Updating!", ephemeral=True)
+
+        for guild in interaction.client.guilds:
+            content = get_queue()
+            lawyer_role = search_role_by_name(guild, "Lawyer")
+            paralegal_role = search_role_by_name(guild, "Paralegal")
+            
+            lawyers = [member for member in guild.members if lawyer_role in member.roles]
+            paralegals = [member for member in guild.members if paralegal_role in member.roles]
+            
+            content = content + f"**Setup Reviewers:**\n{lawyer_role.mention}: "
+            for lawyer in lawyers:
+                content = content + lawyer.display_name + ", "
+            content = content[:-2]
+
+            content = content + f"\n{paralegal_role.mention}: "
+            for paralegal in paralegals:
+                content = content + paralegal.display_name + ", "
+            content = content[:-2]
+
+            for channel in guild.channels:
+                if channel.name == "mafia-hosting-queues":
+                    history = [msg async for msg in channel.history(limit=123)]
+                    history = [msg for msg in history if msg.author == interaction.client.user]
+                    if len(history) == 0:
+                        msg = await channel.send(content)
+                    else:
+                        msg = history[-1]
+                        await msg.edit(content=content)
