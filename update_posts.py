@@ -127,7 +127,6 @@ def update_game(game):
 
     return
 
-update_game("B")
 
 def scrape_playerlist(game):
     playerlist = []
