@@ -62,11 +62,15 @@ def read_from_last(url, last_page_number):
             postid = message.find("a", rel='nofollow')["href"]
             postid = int(postid[postid.find("post-") + 5:])
 
+            #edit the post html time (message.find("time")), set the inner text to postdate
+            message.find("time").string = postdate
+
             # add post to list
             scrapedPosts.append(
                 Post(username, postnumber, postid, postdate, str(message)))
 
     return scrapedPosts
+
 
 
 # update_game updates the posts and votes in the database for a game.

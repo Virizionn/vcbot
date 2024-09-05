@@ -1,6 +1,7 @@
 from typing import Literal
 import discord
 from discord import app_commands
+import asyncio
 
 from custom_types import Phase
 import database
@@ -23,6 +24,11 @@ def search_role_by_name(guild, role_name):
     for role in guild.roles:
         if role_name in role.name:
             return role
+        
+def search_channel_by_name(guild, channel_name):
+    for channel in guild.channels:
+        if channel_name in channel.name:
+            return channel
 
 help_message = discord.Embed(colour=discord.Color.teal(),
                              description="""**Commands:**
@@ -91,7 +97,7 @@ class game(app_commands.Group):
         else:
             #remove the page number, arbitrarily length
             url = url[:url.rfind("page-")] + "page-"
-            database.set_game_attr(game, "url", url)
+        database.set_game_attr(game, "url", url)
 
         await interaction.response.send_message(
             'Wiped post database and Set url for game {} to {}.'.format(game, url))
@@ -126,6 +132,7 @@ class update(app_commands.Group):
         database.set_game_attr(game, "interval", interval)
 
         await interaction.response.send_message('Set interval for game **{}** to **{}** minutes.'.format(game, interval))
+            
 
     #DATABASE COMMANDS - PUBLIC USE
 
@@ -136,6 +143,12 @@ class update(app_commands.Group):
         database.set_game_attr(game, "update_now_requested", True)
 
         await interaction.response.send_message('Immediate update requested for game {}. Updating typically takes a minute.'.format(game))
+
+        while(1):
+            await asyncio.sleep(5)
+            if database.get_game_attr(game, "update_now_requested") == False:
+                await interaction.followup.send("Update complete!")
+                break
 
 
 class game_phase(app_commands.Group):
@@ -300,12 +313,11 @@ class queue(app_commands.Group):
                 content = content + paralegal.display_name + ", "
             content = content[:-2]
 
-            for channel in guild.channels:
-                if channel.name == "mafia-hosting-queues":
-                    history = [msg async for msg in channel.history(limit=123)]
-                    history = [msg for msg in history if msg.author == interaction.client.user]
-                    if len(history) == 0:
-                        msg = await channel.send(content)
-                    else:
-                        msg = history[-1]
-                        await msg.edit(content=content)
+            channel = search_channel_by_name(guild, "mafia-hosting-queues")
+            history = [msg async for msg in channel.history(limit=123)]
+            history = [msg for msg in history if msg.author == interaction.client.user]
+            if len(history) == 0:
+                msg = await channel.send(content)
+            else:
+                msg = history[-1]
+                await msg.edit(content=content)
