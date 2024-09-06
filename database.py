@@ -28,7 +28,8 @@ MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI) # For production. Needs a .env file with MONGO_URI.
 #client = MongoClient("mongodb://localhost:27017/") # For testing, uses local mongo DB
 
-db = client.Cluster0
+db = client['mafia']
+
 print("Mongo DB connection made")
 
 @validate_game
