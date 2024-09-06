@@ -66,3 +66,4 @@ def start_web():
     t = Thread(target=run)
     t.start()
 
+start_web()

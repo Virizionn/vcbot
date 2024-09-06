@@ -12,10 +12,6 @@ from custom_types import Vote, Post, Phase
 
 import aerosync_commands
 
-from flask_app import start_web
-
-start_web()
-
 async def updateStatus(status):
   game = discord.Game(status)
   await client.change_presence(status=discord.Status.online, activity=game)
