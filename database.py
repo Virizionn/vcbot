@@ -30,8 +30,6 @@ client = MongoClient(MONGO_URI) # For production. Needs a .env file with MONGO_U
 
 db = client['mafia']
 
-print("Mongo DB connection made")
-
 @validate_game
 def add_vote_to_db(game, vote):
     col = db["votes"]
