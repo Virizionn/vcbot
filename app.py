@@ -59,11 +59,5 @@ def iso(game, target):
 
     return render_template('iso.html', posts=articles)
 
-def run():
-  app.run(host='0.0.0.0',port=8080)
-
-def start_web():
-    t = Thread(target=run)
-    t.start()
-
-start_web()
+if __name__ == '__main__':
+    app.run()
