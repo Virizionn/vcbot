@@ -6,14 +6,23 @@ import re
 import gspread
 import time
 import random
+from dotenv import load_dotenv
+import os
 
 from custom_types import Post, Vote
 import database
 
-gc = gspread.service_account(filename="Credentials/google_secret.json")
+load_dotenv()
+
+#credential is an env variable containing a dict
+credential = os.getenv("GOOGLE_SERVICE_ACCOUNT")
+
+#convert string to dict
+credential = eval(credential)
+
+gc = gspread.service_account_from_dict(credential)
 
 sh = gc.open("Aerosync")
-
 
 # read_from_last reads all posts from the last read page to the current page and returns the posts as a list.
 def read_from_last(url, last_page_number):
@@ -126,8 +135,6 @@ def update_game(game):
                 database.add_vote_to_db(game, v)
 
     return
-
-update_game("B")
 
 def scrape_playerlist(game):
     playerlist = []
