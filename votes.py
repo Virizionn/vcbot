@@ -1,6 +1,5 @@
 # This file contains a function to calculate the votecount for a given postnum in a given game.
 import math
-
 import database
 import update_posts
 
@@ -35,15 +34,28 @@ def create_vc_dict(working_votes, aliases):
     
     return votecount
 
+def get_phase(game, postnum, phases):
+    for phase in reversed(phases):
+        if postnum >= phase['postnum']:
+            return phase
+    return None
+
+def get_vote_history(game):
+    votes = database.get_all_votes(game)
+    i = 0
+    output = ""
+    phases = database.get_phases(game)
+    for vote in votes:
+        i += 1
+        phase = get_phase(game, vote['postnum'], phases)
+        output += "<tr class=''><td class='position'>" + str(i) + "</td><td class='data'>" + vote['voter'] + "</td><td class='data'>" + vote['target'] + "</td><td class='data'><a href=" + vote['url'] + ">" + str(vote['postnum']) + "</a></td>" + "<td class='data'>" + phase['phase'] + "</td></tr>"
+    return output
+
 def get_votecount(game, postnum):
-    current_phase = None
 
     # identify what phase the post is in
     phases = database.get_phases(game)
-    for phase in reversed(phases):
-        if postnum >= phase['postnum']:
-            current_phase = phase
-            break
+    current_phase = get_phase(game, postnum, phases)
 
     og_playerlist = update_posts.get_original_playerlist(game)
     playerlist = get_playerlist(postnum, og_playerlist)
