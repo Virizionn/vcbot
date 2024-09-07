@@ -66,7 +66,9 @@ def read_from_last(url, last_page_number):
 
             # Convert the timestamp to a datetime object
             dt = datetime.datetime.fromtimestamp(timestamp, tz)
-            postdate = dt.strftime('%Y-%m-%d %H:%M %Z')
+            
+            #format the datetime object to a string of format (e.g.) Tuesday, December 1, 2020, at 12:00 PM EST
+            postdate = dt.strftime("%A, %B %d, %Y, at %I:%M %p %Z")
 
             postid = message.find("a", rel='nofollow')["href"]
             postid = int(postid[postid.find("post-") + 5:])

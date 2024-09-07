@@ -209,7 +209,7 @@ class votecount(app_commands.Group):
     @app_commands.describe(game='Available Games', postnum="Post Number")
     async def get_retrospective(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], postnum: int):
         #check if channel name is votecount-game-X
-        if interaction.channel.name == "votecount-game-{}".format(game):
+        if interaction.channel.name == "votecount-game-{}".format(game.lower()):
             votecount = get_votecount(game, postnum)
             embed = discord.Embed(colour=discord.Color.orange(), description=votecount.replace("_",""))
             await interaction.response.send_message(embed=embed)
@@ -221,7 +221,7 @@ class votecount(app_commands.Group):
     @app_commands.command()
     @app_commands.describe(game='Available Games')
     async def get_current(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
-        if interaction.channel.name == "votecount-game-{}".format(game):
+        if interaction.channel.name == "votecount-game-{}".format(game.lower()):
             votecount = get_votecount(game, float('inf'))
             embed = discord.Embed(colour=discord.Color.green(), description=votecount.replace("_",""))
             await interaction.response.send_message(embed=embed)
