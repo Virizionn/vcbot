@@ -1,11 +1,22 @@
 import gspread
 import pandas as pd
 import traceback
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+#credential is an env variable containing a dict
+credential = os.getenv("GOOGLE_SERVICE_ACCOUNT")
+
+#convert string to dict
+credential = eval(credential)
+
+gc = gspread.service_account_from_dict(credential)
 
 def get_queue():
 
   try:
-    gc = gspread.service_account(filename="Credentials/google_secret.json")
     sh = gc.open_by_url(
       """https://docs.google.com/spreadsheets/d/1j-Ny43mj9cY_Im4N9mOrLfIYpDTK-4Jk90OKdcASgfA/edit?usp=sharing"""
     )
