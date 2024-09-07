@@ -23,12 +23,12 @@ load_dotenv()
 dns.resolver.default_resolver=dns.resolver.Resolver(configure=False)
 dns.resolver.default_resolver.nameservers=['8.8.8.8']
 
+
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI) # For production. Needs a .env file with MONGO_URI.
 #client = MongoClient("mongodb://localhost:27017/") # For testing, uses local mongo DB
 
-db = client["mafia"]
-
+db = client['mafia']
 
 @validate_game
 def add_vote_to_db(game, vote):
