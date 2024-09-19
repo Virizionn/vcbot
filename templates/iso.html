@@ -137,6 +137,14 @@
     </style>
   </head>
   <body data-template="thread_view">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      window.jQuery ||
+        document.write(
+          '<script src="/js/vendor/jquery/jquery-3.5.1.min.js"><\/script>',
+        );
+    </script>
+    <script src="https://hypixel.net/js/xf/core-compiled.js"></script>
     <nav class="p-nav">
         <div style="text-align: center">
         <div class="p-nav-scroller hScroller" data-xf-init="h-scroller" data-auto-scroll=".p-navEl.is-selected">
@@ -175,6 +183,33 @@
       document.getElementById('history-link').href = `/${game}/votes`;
       document.getElementById('votecount-link').href = `/${game}/votecount`;
       document.getElementById('iso-link').href = `/${game}/iso/Player`;
+      });
+    </script>
+    <script>
+      window.addEventListener('pageshow', function() {
+        setTimeout(function() {
+          const timeElements = document.querySelectorAll('time');
+          timeElements.forEach(function(timeElement) {
+            const dateTimeString = timeElement.getAttribute('datetime');
+
+            if (dateTimeString) {
+              const date = new Date(dateTimeString);
+              const datePart = date.toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              });
+              const timePart = date.toLocaleString(undefined, {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+              });
+
+              const formattedString = `${datePart} at ${timePart}`;
+              timeElement.textContent = formattedString;
+            }
+          });
+        }, 5);
       });
     </script>
     <div class="p-body-before"></div>
