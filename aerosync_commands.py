@@ -7,6 +7,7 @@ from custom_types import Phase
 import database
 from votes import get_votecount
 from queue_manager import get_queue
+from update_posts import scrape_playerlist
 
 def is_host(interaction: discord.Interaction) -> bool:
   for role in interaction.user.roles:
@@ -37,6 +38,7 @@ help_message = discord.Embed(colour=discord.Color.teal(),
 
                             `/game url <game> <url>` - Set the URL for a game.
                             `/game scrape_playerlist <game>` - Populate list of living players.
+                            `/game wipe <game>` - Wipe the database for a game.
 
                             `/update toggle <game> <on/off>` - Toggle updates on or off.
                             `/update interval <game> <interval>` - Set the interval for updating posts.
@@ -65,7 +67,7 @@ help_message = discord.Embed(colour=discord.Color.teal(),
 
                              Accurate votecounts rely on maintaining the list of living players. [Spreadsheet link](https://docs.google.com/spreadsheets/d/1nEDOQnXse2B5DZktZmmJKolFNLpkFFbLURNQdtPyS3Q/edit?usp=sharing)
 
-                             Link to web ISO/VC interface: `WIP`
+                             Link to web ISO/VC interface: [Interface link](https://aerosync-b84b3746b479.herokuapp.com/A/votecount)
                              """)
 
 #MODERATOR COMMANDS - RESTRICTED USE (God, Mafia)
@@ -101,13 +103,20 @@ class game(app_commands.Group):
 
         await interaction.response.send_message(
             'Wiped post database and Set url for game {} to {}.'.format(game, url))
+    
+    @app_commands.command()
+    @app_commands.check(is_host)
+    @app_commands.describe(game='Available Games')
+    async def wipe(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
+        database.wipe_game_db(game)
+        await interaction.response.send_message('Wiped post database for game {}.'.format(game))
         
     #populate list of living players
     @app_commands.command()
     @app_commands.check(is_host)
     @app_commands.describe(game='Available Games')
     async def scrape_playerlist(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C']):
-        database.scrape_playerlist(game)
+        scrape_playerlist(game)
         await interaction.response.send_message('Scraped playerlist for game {}.'.format(game))
 
 
@@ -286,7 +295,7 @@ class special(app_commands.Group):
     #give link to web interface
     @app_commands.command()
     async def web(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Web interface: {}".format('WIP'), ephemeral=True)
+        await interaction.response.send_message("Web interface: {}".format('https://aerosync-b84b3746b479.herokuapp.com/A/votecount'), ephemeral=True)
 
 #QUEUE COMMANDS - RESTRICTED USE (Host, Puppeteer, God)
 class queue(app_commands.Group):
