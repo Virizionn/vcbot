@@ -128,7 +128,7 @@ class update(app_commands.Group):
     async def toggle(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], toggle: Literal['on', 'off']):
         if toggle == "on":
             database.set_game_attr(game, "update_toggle", True)
-            await interaction.response.send_message('Set update toggle for game **{}** to **{}**. Update interval is currently set to **{}** minutes. Remember to update the phases!'.format(game, database.get_game_attr('A', toggle, 'interval')))
+            await interaction.response.send_message('Set update toggle for game **{}** to **{}**. Update interval is currently set to **{}** minutes. Remember to update the phases!'.format(game, toggle, database.get_game_attr('A', 'interval')))
         if toggle == "off":
             database.set_game_attr(game, "update_toggle", False)
             await interaction.response.send_message('Set update toggle for game **{}** to **{}**.'.format(game, toggle))
