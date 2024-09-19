@@ -54,9 +54,9 @@ tree.on_error = tree_eh
 @tasks.loop(minutes = 10)
 async def myLoop():
   status_options = ["Hypixel Mafia", "Mind games", "Threadcamping", "on MafiaUniverse", "Town of Salem", "Among Us",
-                        "Forum Ghosting", "Bandwagoning", "Deepwolf", "LYLO", "Desperado", "Role Cop", "Bus Driver"
+                        "Forum Ghosting", "Bandwagoning", "as the Deepwolf", "in LYLO", "Desperado", "Role Cop", "Bus Driver"
                         "Jailkeeper", "Godfather", "Neutral Killing", "Executioner", "Pwincess", "Cult Leader", 
-                        "Survivor", "Mafia Goon", "Vigilante", "Jester", "Celeste"
+                        "Survivor", "Mafia Goon", "Vigilante", "Jester", "Town Leader", "Celeste"
                         ]
   await updateStatus(random.choice(status_options))
 
