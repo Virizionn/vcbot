@@ -186,6 +186,15 @@
       });
     </script>
     <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const avatarImages = document.querySelectorAll('img[class^="avatar"]');
+    
+      avatarImages.forEach(function(img) {
+            img.style = "";
+        });
+      });
+    </script>
+    <script>
       window.addEventListener('pageshow', function() {
         setTimeout(function() {
           const timeElements = document.querySelectorAll('time');
