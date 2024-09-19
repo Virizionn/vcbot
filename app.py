@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from flask_apscheduler import APScheduler
 from iso import get_iso
 from votes import get_votecount, get_vote_history
@@ -58,6 +58,19 @@ def iso(game, target):
         articles.append(post.HTML)
 
     return render_template('iso.html', posts=articles)
+
+@app.route('/threads/<thread>/<post>')
+def thread(thread, post):
+  return redirect("https://www.hypixel.net/threads/" + str(thread) + "/" +
+                  str(post))
+
+@app.route('/goto/<path:rest>')
+def goto(rest):
+  query_string = request.query_string.decode("utf-8")
+  redirect_url = f"https://www.hypixel.net/goto/{rest}"
+  if query_string:
+    redirect_url += f"?{query_string}"
+  return redirect(redirect_url)
 
 if __name__ == '__main__':
     app.run()
