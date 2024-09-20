@@ -47,6 +47,7 @@ help_message = discord.Embed(colour=discord.Color.teal(),
                             `/game_phase add <game> <phase> <postnum>` - Add a phase to a game.
                             `/game_phase remove <game> <phase_name>` - Remove a phase from a game.
                             `/game_phase list <game>` - List all phases for a game.
+                            `/game toggle_hammer <game> <on/off>` - Toggle hammer on or off.
 
                             `/votecount get_retrospective <game> <postnum>` - Get retrospective votecount.
                             `/votecount get_current <game>` - Get current votecount.
@@ -104,6 +105,17 @@ class game(app_commands.Group):
         await interaction.response.send_message(
             'Wiped post database and Set url for game {} to {}.'.format(game, url))
     
+    @app_commands.command()
+    @app_commands.check(is_host)
+    @app_commands.describe(game='Available Games', url="on or off")
+    async def toggle_hammer(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], toggle: Literal['on', 'off']):
+        if toggle == "on":
+            database.set_game_attr(game, "hammer_toggle", True)
+            await interaction.response.send_message('Set hammer toggle for game **{}** to **{}**. Update interval is currently set to **{}** minutes. Remember to update the phases!'.format(game, toggle, database.get_game_attr('A', 'interval')))
+        if toggle == "off":
+            database.set_game_attr(game, "hammer_toggle", False)
+            await interaction.response.send_message('Set hammer toggle for game **{}** to **{}**.'.format(game, toggle))
+
     @app_commands.command()
     @app_commands.check(is_host)
     @app_commands.describe(game='Available Games')
