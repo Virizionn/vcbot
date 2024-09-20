@@ -87,7 +87,7 @@ def get_votecount(game, postnum):
             
             # check hammer
             for target in votecount.keys():
-                if len(votecount[target]) > (len(playerlist)/2.0) and target != "Not voting":
+                if len(votecount[target]) > (len(playerlist)/2.0) and target != "Not voting" and database.get_game_attr(game, "hammer_toggle"):
                     hammer = (target, vote['postnum'])
                     break
                 else:
@@ -123,5 +123,8 @@ def get_votecount(game, postnum):
     if hammer is not None:
         output += "\n{} was hammered at post {}.".format(hammer[0], hammer[1])
     else:
-        output += "\nWith {} players alive, it takes {} votes to hammer.".format(len(playerlist), math.floor(len(playerlist) / 2.0 + 1))
+        if database.get_game_attr(game, "hammer_toggle"):
+            output += "\nWith {} players alive, it takes {} votes to hammer.".format(len(playerlist), math.floor(len(playerlist) / 2.0 + 1))
+        else:
+            output += "\nHammering is not currently enabled."
     return output
