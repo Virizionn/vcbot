@@ -107,7 +107,7 @@ class game(app_commands.Group):
     
     @app_commands.command()
     @app_commands.check(is_host)
-    @app_commands.describe(game='Available Games', url="on or off")
+    @app_commands.describe(game='Available Games', toggle="on or off")
     async def toggle_hammer(self, interaction: discord.Interaction, game: Literal['A', 'B', 'C'], toggle: Literal['on', 'off']):
         if toggle == "on":
             database.set_game_attr(game, "hammer_toggle", True)
