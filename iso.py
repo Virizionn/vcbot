@@ -10,10 +10,9 @@ from custom_types import Post
 def get_iso(players, game):
     iso_db_obj = get_posts_by_authors(game, players)  # get a list of database objects pertaining to "players"
     iso_list = []  # storage
-    for mapping in iso_db_obj:
-        cur_post = Post(mapping["author"], mapping["postnum"], mapping["post_id"],
-                        mapping["date"], mapping["content"])  # initiate a post obj
-        iso_list.append(cur_post)
+    for mapping in iso_db_obj:  # extract
+        iso_list.append(Post(mapping["author"], mapping["postnum"], mapping["post_id"],
+                             mapping["date"], mapping["content"]))
     return iso_list
 
 
