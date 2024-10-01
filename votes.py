@@ -76,7 +76,7 @@ def get_votecount(game, postnum):
     for p in playerlist:
         working_votes[p] = {'voter': p, 'target': 'Not voting', 'postnum': 1, 'url': None}
 
-    if votes == []:
+    if not votes:
         votecount = create_vc_dict(working_votes, aliases)
         hammer = None
 
