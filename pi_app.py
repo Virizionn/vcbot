@@ -19,6 +19,7 @@ update_time_log_A = 0
 update_time_log_B = 0
 update_time_log_C = 0
 
+
 def try_update(game):
     database.set_game_attr(game, "update_now_requested", "Updating now")
     try:
@@ -26,8 +27,9 @@ def try_update(game):
     except Exception as e:
         print(e)
     database.set_game_attr(game, "update_now_requested", False)
-    
+
     return
+
 
 # Scheduler job for checking if updates are desired. Pulled every 10 seconds.
 @scheduler.task('interval', id='do_job_A', seconds=10, misfire_grace_time=900)

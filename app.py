@@ -12,13 +12,15 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 
 def replace(match):
-        playername = match.group(1)
-        url = match.group(2)
-        return f'<a href="{url}">{playername}</a>'
+    playername = match.group(1)
+    url = match.group(2)
+    return f'<a href="{url}">{playername}</a>'
+
 
 @app.route('/')
 def home():
-    return("I'm alive!")
+    return ("I'm alive!")
+
 
 # Set up endpoint for votecount
 @app.route('/<game>/votecount')
@@ -31,6 +33,7 @@ def vc(game):
     vc = vc.replace("as of post 100000", "Most recent")
     return render_template('votecount.html', votecount=vc)
 
+
 # Set up endpoint for retrospective votecount
 @app.route('/<game>/votecount/<postnum>')
 def past_vc(game, postnum):
@@ -41,11 +44,13 @@ def past_vc(game, postnum):
     vc = vc.replace("**", "")
     return render_template('votecount.html', votecount=vc)
 
+
 # Set up endpoint for vote history
 @app.route('/<game>/votes')
 def history(game):
     history = get_vote_history(game)
     return render_template('votehistory.html', history=history)
+
 
 # Set up endpoint for targeted ISO
 @app.route('/<game>/iso/<target>')
@@ -59,18 +64,21 @@ def iso(game, target):
 
     return render_template('iso.html', posts=articles)
 
+
 @app.route('/threads/<thread>/<post>')
 def thread(thread, post):
-  return redirect("https://www.hypixel.net/threads/" + str(thread) + "/" +
-                  str(post))
+    return redirect("https://www.hypixel.net/threads/" + str(thread) + "/" +
+                    str(post))
+
 
 @app.route('/goto/<path:rest>')
 def goto(rest):
-  query_string = request.query_string.decode("utf-8")
-  redirect_url = f"https://www.hypixel.net/goto/{rest}"
-  if query_string:
-    redirect_url += f"?{query_string}"
-  return redirect(redirect_url)
+    query_string = request.query_string.decode("utf-8")
+    redirect_url = f"https://www.hypixel.net/goto/{rest}"
+    if query_string:
+        redirect_url += f"?{query_string}"
+    return redirect(redirect_url)
+
 
 if __name__ == '__main__':
     app.run()
