@@ -14,15 +14,16 @@ import database
 
 load_dotenv()
 
-#credential is an env variable containing a dict
+# credential is an env variable containing a dict
 credential = os.getenv("GOOGLE_SERVICE_ACCOUNT")
 
-#convert string to dict
+# convert string to dict
 credential = eval(credential)
 
 gc = gspread.service_account_from_dict(credential)
 
 sh = gc.open("Aerosync")
+
 
 # read_from_last reads all posts from the last read page to the current page and returns the posts as a list.
 def read_from_last(url, last_page_number):
@@ -66,14 +67,14 @@ def read_from_last(url, last_page_number):
 
             # Convert the timestamp to a datetime object
             dt = datetime.datetime.fromtimestamp(timestamp, tz)
-            
-            #format the datetime object to a string of format (e.g.) Tuesday, December 1, 2020, at 12:00 PM EST
+
+            # format the datetime object to a string of format (e.g.) Tuesday, December 1, 2020, at 12:00 PM EST
             postdate = dt.strftime("%A, %B %d, %Y, at %I:%M %p %Z")
 
             postid = message.find("a", rel='nofollow')["href"]
             postid = int(postid[postid.find("post-") + 5:])
 
-            #edit the post html time (message.find("time")), set the inner text to postdate
+            # edit the post html time (message.find("time")), set the inner text to postdate
             message.find("time").string = postdate
 
             # add post to list
@@ -81,7 +82,6 @@ def read_from_last(url, last_page_number):
                 Post(username, postnumber, postid, postdate, str(message)))
 
     return scrapedPosts
-
 
 
 # update_game updates the posts and votes in the database for a game.
@@ -137,6 +137,7 @@ def update_game(game):
                 database.add_vote_to_db(game, v)
 
     return
+
 
 def scrape_playerlist(game):
     playerlist = []
