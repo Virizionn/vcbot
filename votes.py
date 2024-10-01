@@ -98,8 +98,7 @@ def get_votecount(game, postnum):
                                                                                                      "hammer_toggle"):
                     hammer = (target, vote['postnum'])
                     break
-                else:
-                    hammer = None
+                hammer = None
 
             if hammer is not None:
                 break
