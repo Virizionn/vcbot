@@ -57,7 +57,7 @@ async def myLoop():
                         "Forum Ghosting", "Bandwagoning", "as the deepwolf", "LYLO", "Desperado", "Role Cop", "Bus Driver",
                         "Jailkeeper", "Godfather", "Neutral Killing", "Executioner", "Pwincess", "Cult Leader", 
                         "Survivor", "Mafia Goon", "Vigilante", "Jester", "Town Leader", "Celeste", "Mafia Kart", "RVS", 
-                        "MYLO", "Wolfia", "Final 3", "Scumhunting", "during work", "skill issuing", "too many games"]
+                        "MYLO", "Wolfia", "Final 3", "Scumhunting", "during work", "skill issuing", "too many games", "Minecraft"]
   await updateStatus(random.choice(status_options))
 
 
