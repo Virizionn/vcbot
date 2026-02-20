@@ -1,8 +1,1 @@
-Activate the venv by running 
-.\myvenv\Scripts\Activate.ps1
-
-Then, pip freeze > requirements.txt will populate the requirements
-
-type deactivate to close the venv.
-
-run pip install requirements.txt to ensure all requirements are satisfied
+MY FORK of the repo. Please do not try to run -- this fork is outdated and not currently maintained at the moment!
